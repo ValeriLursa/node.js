@@ -17,6 +17,7 @@ app.post("/", urlencodedParser, function (request, response) {
     if(!request.body) return response.sendStatus(400);
     console.log(request.body);
     //Не работает вывод результата на html
+    //https://metanit.com/web/nodejs/4.5.php
     if (request.body.userAge > 17) response.redirect("index"); else response.send("${request.body.userName} - ${request.body.userAge}<br><h1>Доступ закрыт, прости<h1>");
 });
 
