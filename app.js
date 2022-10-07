@@ -38,8 +38,7 @@ app.get("/index", (_, response) =>
     response.sendFile(__dirname+"/index.html"));
 
 //room
-// определение Router для room
-const roomRouter = express.Router();
+
 
 //статичные файлы в папке room
 app.use("/room", express.static(__dirname+'/room'));
@@ -48,17 +47,23 @@ app.get("/room", (_, response) => response.sendFile(__dirname+"/room/room.html")
 
 //bedroom
 //books
-app.get("/room/bedroom/books/:bookId", function (request, response) {
-    response.send("bookId: " + request.params["bookId"])
+// определение Router для books
+const bookRouter = express.Router();
+
+//просмотр информации о книге по ее id
+bookRouter.get("/:bookId", function (request, response) {
+    response.send('bookId: ' + request.params["bookId"])
   });
 
-app.get("/room/bedroom/books/:bookId.:ext", (req, res) =>{
+//обращение к файлу книги
+bookRouter.get("/:bookId.:ext", (req, res) =>{
     let bookId = req.params["bookId"];
     let ext = req.params["ext"];
     res.send('Запрошенный файл: ${bookId}.${ext}', bookId, ext)
 })
-//сопоставление роутер с конечной точкой "/room"
-//app.use("/room", roomRouter);
+
+//сопоставление роутер с конечной точкой "/room/bedroom/books"
+app.use("/room/bedroom/books", bookRouter);
 //bathroom
 app.get("/bathroom", (_, response) => response.send("<h1>Ванная</h1>"));
 
