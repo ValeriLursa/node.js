@@ -18,15 +18,20 @@ app.get("/", function(_, response){
 
 app.post("/", urlencodedParser, function (request, response) {
     if(!request.body) return response.sendStatus(400);
-    console.log(request.body);
-    //Не работает вывод результата на html
+    //Не работает вывод результата на html через response.send через переменные
     //https://metanit.com/web/nodejs/4.5.php
     if (request.body.userAge > 17) {
         permiss = true;
         response.redirect("index"); 
     }
-    else response.send('${userName} - ${userAge}',
-     request.body.userName, request.body.userAge);
+    else {
+        //вывод в консоль на стороне сервера в формате json
+        console.log(JSON.stringify(request.body));
+        //результат вывода {"userName":"Игорь","userAge":"1"}
+        //возвращение страницы с результатом
+        response.send('Результат: ' + request.body.userName +' '+ request.body.userAge);
+        //результат вывода Результат: Игорь 1
+    }
 });
 
 //file-css
