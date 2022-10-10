@@ -1,6 +1,6 @@
 const { response } = require("express");
 const express = require("express");
- 
+const hbs = require("hbs");
 const app = express();
 
 /*парсер для данных
@@ -12,6 +12,8 @@ const urlencodedParser = express.urlencoded({extended: false});
 Установка Handelebars в качестве движка представления в Express
 */
 app.set("view engine", "hbs");
+//Настройка фукнционала частичных представлений
+hbs.registerPartials(__dirname + "/views/partials");
 
 var permiss = false;
 
@@ -40,7 +42,8 @@ app.post("/", urlencodedParser, function (request, response) {
 });
 
 //file-css
-app.get("/css/navbar.css", (_, response) => response.sendFile(__dirname +"/css/navbar.css"))
+app.get("/navbar.css", (_, response) => response.sendFile(__dirname +"/css/navbar.css"))
+app.get("/footer.css", (_, response) => response.sendFile(__dirname +"/css/footer.css"))
 
 //index
 app.get("/index", (_, response) => 

@@ -3,11 +3,15 @@
   <head>
       <title>{{title}}</title>
       <meta charset="utf-8" />
+      <link rel="stylesheet" type="text/css" href="navbar.css"/>
+      <link rel="stylesheet" type="text/css" href="footer.css"/>
   </head>
   <body>
+        {{> menu}}
         <h1>{{title}}</h1>
         <h3>Маленький человечек, который переехал в другой город, чтобы найти работу</h3>
         <p>Электронный адрес: {{email}}</p>
         <p>Телефон: {{phone}}</p>
+        {{> footer}}
   </body>
 <html>
