@@ -1,6 +1,7 @@
 const { response } = require("express");
 const express = require("express");
 const hbs = require("hbs");
+const expressHbs = require("express-handlebars");
 const app = express();
 
 /*парсер для данных
@@ -8,6 +9,14 @@ const app = express();
 а каждое значение может быть представлено в виде строки или массив*/
 const urlencodedParser = express.urlencoded({extended: false});
 
+// устанавка настроек для файлов layout
+app.engine("hbs", expressHbs.engine(
+    {
+        layoutsDir: "views/layouts", 
+        defaultLayout: "layout",
+        extname: "hbs"
+    }
+))
 /*
 Установка Handelebars в качестве движка представления в Express
 */
@@ -42,7 +51,7 @@ app.post("/", urlencodedParser, function (request, response) {
 });
 
 //file-css
-app.get("/navbar.css", (_, response) => response.sendFile(__dirname +"/css/navbar.css"))
+app.get(["/navbar.css","/room/navbar.css"], (_, response) => response.sendFile(__dirname +"/css/navbar.css"))
 app.get("/footer.css", (_, response) => response.sendFile(__dirname +"/css/footer.css"))
 
 //index
@@ -89,12 +98,18 @@ app.get("/about", (_,response) => {
     //отправка модели представления на место шаблона
     /*производится рендеринг представления "about.hbs" с помощью функции response.render().
     На основе представления функция создает страницу html, которая отправляется клиенту*/
-    response.render("about.hbs",{
+    response.render("about",{
         title: "Информация обо мне",
-        email: "kve8@mail.ru",
-        phone: "8(987)654-32-10"
     });
 });
+
+app.get("/contact", (_,res) =>{
+    res.render("contact",{
+        title: "Контактные данные",
+        email: "kve8@mail.ru",
+        phone: "8(987)654-32-10"
+    })
+})
 
 //*
 //обработка статусного кода 404
