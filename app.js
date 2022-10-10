@@ -8,6 +8,11 @@ const app = express();
 а каждое значение может быть представлено в виде строки или массив*/
 const urlencodedParser = express.urlencoded({extended: false});
 
+/*
+Установка Handelebars в качестве движка представления в Express
+*/
+app.set("view engine", "hbs");
+
 var permiss = false;
 
 //start
@@ -73,8 +78,20 @@ app.use("/room/bedroom/books", bookRouter);
 app.get("/bathroom", (_, response) => response.send("<h1>Ванная</h1>"));
 
 //about
-//отправка файла about.html
-app.get("/about", (_,response) => response.sendFile(__dirname+"/about.html"));
+
+app.get("/about", (_,response) => {
+    //отправка файла about.html
+    //response.sendFile(__dirname+"/about.html");
+
+    //отправка модели представления на место шаблона
+    /*производится рендеринг представления "about.hbs" с помощью функции response.render().
+    На основе представления функция создает страницу html, которая отправляется клиенту*/
+    response.render("about.hbs",{
+        title: "Информация обо мне",
+        email: "kve8@mail.ru",
+        phone: "8(987)654-32-10"
+    });
+});
 
 //*
 //обработка статусного кода 404
