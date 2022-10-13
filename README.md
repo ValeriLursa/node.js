@@ -18,3 +18,8 @@ Get-запрос через форму <img src="/img/api.books/get_form.png" al
 Форма до удаления <img src="img/api.books/delete1.png" alt="before delete request image"/>
 Форма после удаления <img src="img/api.books/delete2.png" alt="before delete request image"/>
 Файл json после удаления <img src="img/api.books/delete.fileJson.png" alt="delete request json-file image"/>
+
+<h4>--post-запрос--</h4>
+Форма до добавления <img src="img/api.books/post1.png" alt="before post request image"/>
+Форма после добавления <img src="img/api.books/post2.png" alt="before post request image"/>
+Файл json в виде массива после добавления <img src="img/api.books/post.fileJson.png" alt="post request json-file image"/>
