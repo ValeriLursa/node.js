@@ -98,7 +98,6 @@
 
         //Изменение книги
         async function EditBook(idBook, authorBook, nameBook){
-          cl([idBook,authorBook,nameBook]);
           const res = await fetch("/api/books", {
             method: "PUT",
             headers: {"Accept": "application/json", "Content-Type": "application/json"},
@@ -117,14 +116,14 @@
 
         //Удаление пользователя
         async function DeleteBook(idBook){
-          const res = await fetch("/api/books/" + id,{
+          const res = await fetch("/api/books/" + idBook,{
             method: "DELETE",
             headers: {"Accept" : "application/json"}
           });
           if (res.ok === true){
-            const user = await res.json();
+            const book = await res.json();
             document.querySelector("tr[data-rowid='"+book.id +"']").remove();
-          } else console.log("Ошибка в delet запросе")
+          } else console.log("Ошибка в delete запросе")
         }
 
         //сброс формы
