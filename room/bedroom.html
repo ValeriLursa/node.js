@@ -60,42 +60,50 @@
 
         //получение одной книги
         async function GetBook(id){
-          const res = await fetch("api/books/" + id,{
+          const res = await fetch("/api/books/" + id,{
             method: "GET",
             headers: {"Accept": "application/json"}
           });
           if (res.ok === true){
-            const author = await res.json();
+            const book = await res.json();
             const form =document.forms["bookshelf"];
             form.elements["id"].value = book.id;
             form.elements["author"].value = book.author;
             form.elements["name"].value = book.name;
-          } else console.log("Ошибка в get запроса с id")
+          } else console.log("Ошибка в get запросе с id на стороне клиента")
         }
 
         //Добавление книги
         async function CreateBook(authorBook, nameBook){
-          const res = await fetch("api/books", {
-            method: "POST",
-            headers: {"Accept": "application/json", "Content-Type": "application/json"},
-            body: JSON.stringify({
-              author: authorBook,
-              name: nameBook
-            })
-          });
-          if (res.ok === true){
-            const book = await res.json();
-            reset();
-            document.querySelector("tbody").append(row(book));
-          } else console.log("Ошибка в post запросе")
+          if (authorBook!=''&&nameBook!=''){
+            const res = await fetch("/api/books", {
+              method: "POST",
+              headers: {"Accept": "application/json", "Content-Type": "application/json"},
+              body: JSON.stringify({
+                author: authorBook,
+                name: nameBook
+              })
+            });
+            if (res.ok === true){
+              const book = await res.json();
+              reset();
+              document.querySelector("tbody").append(row(book));
+            } else console.log("Ошибка в post запросе")
+          }
+        }
+
+        function cl(a){
+          console.log(a);
         }
 
         //Изменение книги
         async function EditBook(idBook, authorBook, nameBook){
-          const res = await fetch("api/books", {
+          cl([idBook,authorBook,nameBook]);
+          const res = await fetch("/api/books", {
             method: "PUT",
             headers: {"Accept": "application/json", "Content-Type": "application/json"},
             body: JSON.stringify({
+              id: idBook,
               author: authorBook,
               name: nameBook
             })
@@ -109,7 +117,7 @@
 
         //Удаление пользователя
         async function DeleteBook(idBook){
-          const res = await fetch("api/books/" + id,{
+          const res = await fetch("/api/books/" + id,{
             method: "DELETE",
             headers: {"Accept" : "application/json"}
           });
@@ -182,7 +190,8 @@
       }
 
       //отправка формы
-      document.forms["bookshelf"].addEventListener("submin", e=>{
+      document.forms["bookshelf"].addEventListener("submit", e=>{
+        console.log("Отправка формы");
         e.preventDefault();
         const form = document.forms["bookshelf"];
         const id = form.elements["id"].value;

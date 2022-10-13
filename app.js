@@ -160,22 +160,34 @@ app.delete("/api/books/:id", (req, res)=>{
     else res.status(404).send();
 })
 
+function cl(a){
+    console.log(a);
+}
+
 //изменение данных книги
 app.put("/api/books", jsonParser, (req, res) =>{
     if (!req.body) return res.sendStatus(400);
 
     const idBook = req.body.id;
-    const authorBook = req.body.authorBook;
-    const nameBook = req.body.nameBook;
+    const authorBook = req.body.author;
+    const nameBook = req.body.name;
+    cl([idBook, authorBook, nameBook]);
 
     let data = fs.readFileSync(filePath, "utf8");
     const books = JSON.parse(data);
     let book;
-    books.forEach(bookFor =>{
-        if (bookFor.id == idBook) {
+
+    books.forEach(bookFor => {
+        if (bookFor.id == idBook){
             book = bookFor;
         }
     })
+    // for(var i=0; i<books.length; i++){
+    //     if(books[i].id==idBook){
+    //         book = books[i];
+    //         break;
+    //     }
+    // }
 
     //изменение данных книги
     if (book){
