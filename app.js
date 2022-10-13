@@ -3,6 +3,9 @@ const express = require("express");
 const hbs = require("hbs");
 const expressHbs = require("express-handlebars");
 const app = express();
+const fs = require("fs");
+const jsonParser = express.json(); // для извелечения данных из запроса
+const filePath = "books.json";
 
 /*парсер для данных
 объект - результат парсинга будет представлять набор пар ключ-значение,
@@ -60,8 +63,6 @@ app.get("/index", (_, response) =>
     response.sendFile(__dirname+"/index.html"));
 
 //room
-
-
 //статичные файлы в папке room
 app.use("/room", express.static(__dirname+'/room'));
 
@@ -74,7 +75,7 @@ const bookRouter = express.Router();
 
 //просмотр информации о книге по ее id
 bookRouter.get("/:bookId", function (request, response) {
-    response.send('bookId: ' + request.params["bookId"])
+    response.send('bookId: ' + request.params["bookId"]);
   });
 
 //обращение к файлу книги
@@ -86,11 +87,112 @@ bookRouter.get("/:bookId.:ext", (req, res) =>{
 
 //сопоставление роутер с конечной точкой "/room/bedroom/books"
 app.use("/room/bedroom/books", bookRouter);
+
+//api в стиле REST для взаимодействия с пользователем
+//работа с библиотекой
+//вывод всех книг
+app.get("/api/books", function(_, res){
+    const content = fs.readFileSync(filePath,"utf8");
+    const books = JSON.parse(content);
+    res.send(books);
+});
+
+//получение одной книги по ее id
+app.get("/api/books/:id", (req, res)=>{
+    const id = req.params.id; //получаем id
+    const content = fs.readFileSync(filePath, "utf8");
+    const books = JSON.parse(content);
+    let book = null;
+    //поиск в массиве книгу по id
+    books.forEach(bookFor => {
+        if (bookFor.id == id){
+            book = bookFor;
+        }
+    });
+    //возврат книги
+    if (book) res.send(book);
+    else res.status(404).send();
+})
+
+//получение отправленных данных, добавление новой книги
+app.post("/api/books", jsonParser, (req, res)=>{
+    if (!req.body) return res.sendStatus(400);
+    const authorBook = req.body.authorBook;
+    const nameBook = req.body.nameBook;
+    let book = {author: authorBook, name: nameBook};
+
+    let data = fs.readFileSync(filePath, "utf8");
+    let books = JSON.parse(data);
+
+    //поиск максимального id в базе
+    const id = Math.max.apply(Math.books.map((o)=> {return o.id;}));
+    //увеличение id на 1
+    book.id = id++;
+    //добавление книги в массив
+    books.push(book);
+    data = JSON.stringify(books);
+    //перезаписывание файла json с новой книгой
+    fs.writeFileSync("books.json", data);
+    res.send(book);
+})
+
+//удаление книги по id
+app.delete("/api/books/:id", (req, res)=>{
+    const id = req.params.id;
+    let data = fs.readFileSync(filePath, "utf8");
+    let books = JSON.parse(data);
+    let index = -1;
+    //поиск индекса книги в массиве
+    books.forEach(bookFor => {
+        if (bookFor.id==id){
+            index = id-1;
+        }
+    });
+
+    if (index > -1){
+        //удаление книги из массива по индексу
+        const book = books. splice(index,1)[0];
+        data = JSON.stringify(books);
+        fs.writeFileSync(filePath, data);
+        //возврат удаленного пользователя
+        res.send(book);
+    }
+    else res.status(404).send();
+})
+
+//изменение данных книги
+app.put("/api/books", jsonParser, (req, res) =>{
+    if (!req.body) return res.sendStatus(400);
+
+    const idBook = req.body.id;
+    const authorBook = req.body.authorBook;
+    const nameBook = req.body.nameBook;
+
+    let data = fs.readFileSync(filePath, "utf8");
+    const books = JSON.parse(data);
+    let book;
+    books.forEach(bookFor =>{
+        if (bookFor.id == idBook) {
+            book = bookFor;
+        }
+    })
+
+    //изменение данных книги
+    if (book){
+        book.author = authorBook;
+        book.name = nameBook;
+        data = JSON.stringify(books);
+        fs.writeFileSync(filePath, data);
+        res.send(book);
+    }
+    else res.status(404).send(book);
+})
+
 //bathroom
 app.get("/bathroom", (_, response) => response.send("<h1>Ванная</h1>"));
 
+//представления
 //about
-
 app.get("/about", (_,response) => {
     //отправка файла about.html
     //response.sendFile(__dirname+"/about.html");
@@ -103,6 +205,7 @@ app.get("/about", (_,response) => {
     });
 });
 
+//contact
 app.get("/contact", (_,res) =>{
     res.render("contact",{
         title: "Контактные данные",
@@ -110,6 +213,7 @@ app.get("/contact", (_,res) =>{
         phone: "8(987)654-32-10"
     })
 })
+//---
 
 //*
 //обработка статусного кода 404

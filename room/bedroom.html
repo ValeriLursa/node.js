@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-      <title>Обо мне</title>
+      <title>Спальня</title>
       <meta charset="utf-8" />
-      <link rel="stylesheet" type="text/css" href="../css/navbar.css"/>
+      <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+      <link rel="stylesheet" type="text/css" href="navbar.css"/>
   </head>
   <body>
         <ul>
@@ -16,9 +17,180 @@
       <h2>Диван 1</h2>
       <h2>Диван 2</h2>
       <h2>Книжный шкаф</h2>
-      <ul>
-        <li><a href="/room/bedroom/books/1">Книга 1</a></li>
-        <li><a href="/room/bedroom/books/2">Книга 2</a></li>
-      </ul>
+      <form name="bookshelf">
+        <input type="hidden" name="id" value="0" />
+        <div class="form-group">
+          <label for="author">Автор:</label>
+          <input class="form-control" name="author"/>
+        </div>
+        <div class="form-group">
+          <label for="name">Название:</label>
+          <input class="form-control" name="name"/>
+        </div>
+        <div class="panel-body">
+          <button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
+          <a id="reset" class="btn btn-sm btn-primary">Сбросить</a>
+        </div>
+      </form>
+      <table class="table table-condensed table-striped table-bordered">
+        <thead><tr><th>Id</th><th>Автор</th><th>Название</th></tr></thead>
+        <tbody></tbody>
+      </table>
+
+      <!--js-скрипт с запросами-->
+      <script>
+        //Получение всех книг
+        async function GetBooks(){
+          //отправка запроса get
+          const res = await fetch("/api/books", {
+            method: "GET",
+            headers: {"Accept": "application/json"}
+          });
+          //если запрос прошел удачно
+          if (res.ok === true){
+            //получение данных
+            const books = await res.json();
+            let rows = document.querySelector("tbody");
+            books.forEach(book => {
+              //вывод полученных данных в таблицу
+              rows.append(row(book));
+            });
+          } else console.log('Ошибка в get запросе');
+        }
+
+        //получение одной книги
+        async function GetBook(id){
+          const res = await fetch("api/books/" + id,{
+            method: "GET",
+            headers: {"Accept": "application/json"}
+          });
+          if (res.ok === true){
+            const author = await res.json();
+            const form =document.forms["bookshelf"];
+            form.elements["id"].value = book.id;
+            form.elements["author"].value = book.author;
+            form.elements["name"].value = book.name;
+          } else console.log("Ошибка в get запроса с id")
+        }
+
+        //Добавление книги
+        async function CreateBook(authorBook, nameBook){
+          const res = await fetch("api/books", {
+            method: "POST",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"},
+            body: JSON.stringify({
+              author: authorBook,
+              name: nameBook
+            })
+          });
+          if (res.ok === true){
+            const book = await res.json();
+            reset();
+            document.querySelector("tbody").append(row(book));
+          } else console.log("Ошибка в post запросе")
+        }
+
+        //Изменение книги
+        async function EditBook(idBook, authorBook, nameBook){
+          const res = await fetch("api/books", {
+            method: "PUT",
+            headers: {"Accept": "application/json", "Content-Type": "application/json"},
+            body: JSON.stringify({
+              author: authorBook,
+              name: nameBook
+            })
+          });
+          if (res.ok === true){
+            const book = await res.json();
+            reset();
+            document.querySelector("tr[data-rowid='"+book.id+"']").replaceWith(row(book));
+          } else console.log("Ошибка в put запросе")
+        }
+
+        //Удаление пользователя
+        async function DeleteBook(idBook){
+          const res = await fetch("api/books/" + id,{
+            method: "DELETE",
+            headers: {"Accept" : "application/json"}
+          });
+          if (res.ok === true){
+            const user = await res.json();
+            document.querySelector("tr[data-rowid='"+book.id +"']").remove();
+          } else console.log("Ошибка в delet запросе")
+        }
+
+        //сброс формы
+      function reset(){
+        const form = document.forms["bookshalf"];
+        form.reset();
+        form.elements["id"].value=0;
+      }
+
+      //создание строки для таблицы
+      function row(book){
+        const tr = document.createElement("tr");
+        tr.setAttribute("data-rowid", book.id);
+
+        const idTd = document.createElement("td");
+        idTd.append(book.id);
+        tr.append(idTd);
+
+        const authorTd = document.createElement("td");
+        authorTd.append(book.author);
+        tr.append(authorTd);
+
+        const nameTd = document.createElement("td");
+        nameTd.append(book.name);
+        tr.append(nameTd);
+
+        const linksTd = document.createElement("td");
+
+        //добавление ссылки на изменение данных строки таблицы
+        const editLink = document.createElement("a");
+        editLink.setAttribute("data-id", book.id);
+        editLink.setAttribute("style", "cirsor:pointer;padding:15px;");
+        editLink.append("Изменить");
+        editLink.addEventListener("click", e =>{
+          e.preventDefault();
+          GetBook(book.id);
+        });
+        linksTd.append(editLink);
+
+        //добавление ссылки на удаление тсроки из таблицы
+        const removeLink = document.createElement("a");
+        removeLink.setAttribute("data-id", book.id);
+        removeLink.setAttribute("style", "cursor:pointer;padding:15px;");
+        removeLink.append("Удалить");
+        removeLink.addEventListener("click", e=>{
+          e.preventDefault();
+          DeleteBook(book.id);
+        })
+
+        linksTd.append(removeLink);
+        tr.appendChild(linksTd);
+
+        return tr;
+      }
+
+      //сброс значений формы
+      document.getElementById("reset").click(e=>{
+        e.preventDefault();
+        reset();
+      })
+
+      //отправка формы
+      document.forms["bookshelf"].addEventListener("submin", e=>{
+        e.preventDefault();
+        const form = document.forms["bookshelf"];
+        const id = form.elements["id"].value;
+        const author = form.elements["author"].value;
+        const name = form.elements["name"].value;
+        if (id == 0) CreateBook(author, name);
+        else EditBook(id, author, name);
+      });
+
+      //Загрузка книг
+      GetBooks();
+      </script>
   </body>
 <html>
