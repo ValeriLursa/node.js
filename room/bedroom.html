@@ -121,9 +121,10 @@
 
         //сброс формы
       function reset(){
-        const form = document.forms["bookshalf"];
+        const form = document.forms["bookshelf"];
         form.reset();
         form.elements["id"].value=0;
+        console.log("function reset()")
       }
 
       //создание строки для таблицы
@@ -156,7 +157,7 @@
         });
         linksTd.append(editLink);
 
-        //добавление ссылки на удаление тсроки из таблицы
+        //добавление ссылки на удаление строки из таблицы
         const removeLink = document.createElement("a");
         removeLink.setAttribute("data-id", book.id);
         removeLink.setAttribute("style", "cursor:pointer;padding:15px;");
@@ -173,10 +174,12 @@
       }
 
       //сброс значений формы
-      document.getElementById("reset").click(e=>{
+      document.getElementById("reset").onclick = e=>{
+        console.log("click reset");
         e.preventDefault();
+        
         reset();
-      })
+      }
 
       //отправка формы
       document.forms["bookshelf"].addEventListener("submin", e=>{
