@@ -117,19 +117,19 @@ app.get("/api/books/:id", (req, res)=>{
 //получение отправленных данных, добавление новой книги
 app.post("/api/books", jsonParser, (req, res)=>{
     if (!req.body) return res.sendStatus(400);
-    const authorBook = req.body.authorBook;
-    const nameBook = req.body.nameBook;
+    const authorBook = req.body.author;
+    const nameBook = req.body.name;
     let book = {author: authorBook, name: nameBook};
 
     let data = fs.readFileSync(filePath, "utf8");
     let books = JSON.parse(data);
-
     //поиск максимального id в базе
-    const id = Math.max.apply(Math.books.map((o)=> {return o.id;}));
+    const id = Math.max.apply(null, books.map(function(o){return o.id;}));
     //увеличение id на 1
-    book.id = id++;
+    book.id = id + 1;
     //добавление книги в массив
     books.push(book);
+    console.log(books);
     data = JSON.stringify(books);
     //перезаписывание файла json с новой книгой
     fs.writeFileSync("books.json", data);
