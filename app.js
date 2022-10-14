@@ -65,6 +65,7 @@ app.get("/index", (_, response) =>
 //room
 //статичные файлы в папке room
 app.use("/room", express.static(__dirname+'/room'));
+app.use("/room/bedroom", (_, res) => res.redirect("/room/bedroom.html"));
 
 app.get("/room", (_, response) => response.sendFile(__dirname+"/room/room.html"));
 
@@ -111,7 +112,8 @@ app.get("/api/books/:id", (req, res)=>{
     });
     //возврат книги
     if (book) res.send(book);
-    else res.status(404).send();
+    else res.status(404).send('Такой книги нет');
+    //else res.send('');
 })
 
 //получение отправленных данных, добавление новой книги
