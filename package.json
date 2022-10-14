@@ -9,5 +9,8 @@
     "scripts": {
         "start": "nodemon app.js",
         "dev": "node app.js Tom 26"
+    },
+    "devDependencies": {
+        "mocha": "^10.0.0"
     }
 }
