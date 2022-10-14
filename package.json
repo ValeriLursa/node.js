@@ -8,9 +8,11 @@
     },
     "scripts": {
         "start": "nodemon app.js",
-        "dev": "node app.js Tom 26"
+        "dev": "node app.js Tom 26",
+        "test": "mocha mocha/**/*.test.js"
     },
     "devDependencies": {
-        "mocha": "^10.0.0"
+        "mocha": "^10.0.0",
+        "supertest": "^6.3.0"
     }
 }
