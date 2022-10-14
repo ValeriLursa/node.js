@@ -1,10 +1,10 @@
 //подключение модуля assert для сравнения переменных
 const assert = require("node:assert/strict");
 var operations = require("./operations")
-var stringError = (expectedResult, result) => {return `Expected ${expectedResult}, but got ${result}`};
+var stringError = (expectedResult, result) => { return `Expected ${expectedResult}, but got ${result}` };
 /*it - функция фреймфорка Mocha.
 Принимает два параметра: текстовое описание тестаб по которому его можно идентифицировать, и саму тестирующую функцию */
-it("should multiply two numbers", () =>{
+it("should multiply two numbers", () => {
     var expectedResult = 15; //какой должен получиться результат
     var result = operations.multiply(3, 5);
     //первый вариант сравнения двух переменных
@@ -15,13 +15,22 @@ it("should multiply two numbers", () =>{
     assert.equal(result, expectedResult);
 });
 
-it("should add two numbers", () =>{
-    var expectedResult = 8; //какой должен получиться результат
-    var result = operations.add(3, 5);
-    if (result !== expectedResult){
-        throw new Error(stringError(expectedResult, result));
-    }
-});
+//группировка тестов по одному модулю
+describe("Operation add", () => {
+    it("should add two numbers", () => {
+        var expectedResult = 8; //какой должен получиться результат
+        var result = operations.add(3, 5);
+        if (result !== expectedResult) {
+            throw new Error(stringError(expectedResult, result));
+        }
+    });
+
+    it("should add two numbers", () => {
+        var expectedResult = 9;
+        var result = operations.add(3, 5);
+        assert.notEqual(result, expectedResult);
+    })
+})
 
 /*тестирование асинхронный функции
 функция done передается для того чтобы асинхронная функция завершилась до завершения теста
