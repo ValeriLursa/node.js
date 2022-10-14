@@ -21,8 +21,8 @@ node.js</br>
 </ul>
 <h2>Menu</h2>
 <ul>
-<li><a href="https://github.com/ValeriLursa/node.js/edit/master/README.md#api-%D0%B4%D0%BB%D1%8F-%D0%B2%D0%B7%D0%B0%D0%B8%D0%BC%D0%BE%D0%B4%D0%B5%D0%B9%D1%81%D1%82%D0%B2%D0%B8%D1%8F-%D1%81-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D0%B5%D0%BC">Api для взаимодействия с пользователем</a></li>
-<li><a href="https://github.com/ValeriLursa/node.js/edit/master/README.md#%D0%BC%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%D0%BD%D0%BE%D0%B5-%D1%82%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D1%81-%D0%BF%D0%BE%D0%BC%D0%BE%D1%89%D1%8C%D1%8E-mocha">Модульное тестирование</a></li>
+<li><a href="https://github.com/ValeriLursa/node.js/blob/master/README.md#api-%D0%B4%D0%BB%D1%8F-%D0%B2%D0%B7%D0%B0%D0%B8%D0%BC%D0%BE%D0%B4%D0%B5%D0%B9%D1%81%D1%82%D0%B2%D0%B8%D1%8F-%D1%81-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D0%B5%D0%BC">Api для взаимодействия с пользователем</a></li>
+<li><a href="https://github.com/ValeriLursa/node.js/blob/master/README.md#%D0%BC%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%D0%BD%D0%BE%D0%B5-%D1%82%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D1%81-%D0%BF%D0%BE%D0%BC%D0%BE%D1%89%D1%8C%D1%8E-mocha">Модульное тестирование</a></li>
 </ul>
 
 <h2>API для взаимодействия с пользователем</h2>
@@ -46,11 +46,11 @@ Get-запрос через форму <img src="/img/api.books/get_form.png" al
 Форма после добавления <img src="img/api.books/post2.png" alt="before post request image"/>
 Файл json в виде массива после добавления <img src="img/api.books/post.fileJson.png" alt="post request json-file image"/>
 
-<a href="https://github.com/ValeriLursa/node.js/edit/master/README.md#">Назад</a>
+<a href="https://github.com/ValeriLursa/node.js/blob/master/README.md#">Назад</a>
 
 <h2>Модульное тестирование с помощью Mocha</h2>
 file html tests - тестирование возвращения файла с расширением html с сервера</br>
 file css test - тестирование возвращения файла с расширением css с сервера</br>
 api books Tests - тестирование api.books</br>
 <img src="img/testMucha/testApp.png" alt="unit testing image"/>
-<a href="https://github.com/ValeriLursa/node.js/edit/master/README.md#">Назад</a>
+<a href="https://github.com/ValeriLursa/node.js/blob/master/README.md#">Назад</a>
