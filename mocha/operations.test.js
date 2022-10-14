@@ -5,7 +5,7 @@ var stringError = (expectedResult, result) => {return `Expected ${expectedResult
 /*it - функция фреймфорка Mocha.
 Принимает два параметра: текстовое описание тестаб по которому его можно идентифицировать, и саму тестирующую функцию */
 it("should multiply two numbers", () =>{
-    var expectedResult = 16; //какой должен получиться результат
+    var expectedResult = 15; //какой должен получиться результат
     var result = operations.multiply(3, 5);
     //первый вариант сравнения двух переменных
     // if (result !== expectedResult){
