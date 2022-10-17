@@ -63,7 +63,9 @@ async function run() {
 
         //-- await findWithNameAge(collection);
 
-        await findOneWithName(collection);
+        //-- await findOneWithName(collection);
+        
+        await deleteDocument(collection, 'drop');
     }
     catch (err) {
         console.log("Возникла ошибка");
@@ -148,28 +150,65 @@ async function find(collection) {
     return;
 }
 
-async function findWithName(collection){
+async function findWithName(collection, filter = { name: "Tom" }) {
     //Получение данных из коллекции с фильтром
-    const resultFind = await collection.find({name: "Tom"}).toArray();
+    const resultFind = await collection.find(filter).toArray();
     console.log(resultFind); // -> Array()
-    console.log(`Количество документов с name: "Tom" ${resultFind.length}`); // -> Number()
+    console.log(`Количество документов с name: ${filter.name}: ${resultFind.length}`); // -> Number()
     return;
 }
 
-async function findWithNameAge(collection){
+async function findWithNameAge(collection, filter = { name: "Tom", age: 23 }) {
     //Получение данных из коллекици с фильтром
-    const filter = {name: "Tom", age: 23};
     const resultFind = await collection.find(filter).toArray();
     console.log(resultFind); // -> Array()
     console.log(`Количество документов с name: "Tom" ${resultFind.length}`); // -> Number()
     return;
 }
 
-async function findOneWithName(collection){
-    const filter = {name: "Tom"};
+async function findOneWithName(collection, filter = { name: "Tom" }) {
     const resultFind = await collection.findOne(filter);
     console.log(resultFind); // -> { _id: new ObjectId("634d2e175198c8ab938681ba"), name: 'Tom', age: 23 }
     console.log(resultFind.name); // -> "Tom"
+}
+
+async function deleteDocument(collection, nameFunction, filter) {
+    switch (nameFunction) {
+        case 'deleteOne': {
+            //удаление первого документа по фильтру
+            const resultDelete = await collection.deleteOne(filter);
+            console.log(resultDelete);// -> { acknowledged: true, deletedCount: 1 }
+            break;
+        }
+        case 'deleteMany': {
+            //удаление всех документов по фильтру
+            const resultDelete = await collection.deleteMany(filter);
+            console.log(resultDelete);// -> { acknowledged: true, deletedCount: 3 }
+            break;
+        }
+        case 'findOneAndDelete': {
+            //удаление первого объекта по фильтру и возвращение его данных
+            const resultDelete = await collection.findOneAndDelete(filter);
+            console.log(resultDelete);// ->{
+            //     lastErrorObject: { n: 1 },
+            //     value: {
+            //       _id: new ObjectId("634d2e175198c8ab938681ba"),
+            //       name: 'Tom',
+            //       age: 23
+            //     },
+            //     ok: 1
+            //   }
+            break;
+        }
+        case 'drop':{
+            //удаление всей коллекции
+            //Если удаляемая коллекция - единственная в бд, то бд тоже удалится
+            const resultDelete = await collection.drop();
+            console.log(resultDelete);
+            break;
+        }
+    }
+    return;
 }
 
 run();
