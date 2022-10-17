@@ -38,21 +38,32 @@ async function run() {
     try {
         //Подключение к серверу
         await mongoClient.connect()
+        console.log("Подключение к серверу успешно");
 
         //Взаимодействие с базой данных
         //обращение к базе данных admin
         //Если базы данных с таким именем нет, то сервер создаст ее автоматически
         const db = mongoClient.db("admin");
-        //--command(db);
+        console.log("Подключение к базе данных успешно");
+
+        //--await command(db);
 
         //Если коллекции в базе данных нет, то сервер создаст ее автоматически
         const collection = db.collection("users");
 
-        //--insertOne(collection);
+        //-- await insertOne(collection);
 
-        //--insertMany(collection);
+        //--await insertMany(collection);
 
-        countDocuments(collection);
+        await countDocuments(collection);
+
+        //--await find(collection);
+
+        //--await findWithName(collection);
+
+        //-- await findWithNameAge(collection);
+
+        await findOneWithName(collection);
     }
     catch (err) {
         console.log("Возникла ошибка");
@@ -129,6 +140,36 @@ async function command(db) {
     return;
 }
 
+async function find(collection) {
+    //Получение данных из коллекции.
+    //Фнукция find возвращает специальный объекта FindCursor
+    const resultFind = await collection.find().toArray();
+    console.log(resultFind); // -> Array()
+    return;
+}
 
+async function findWithName(collection){
+    //Получение данных из коллекции с фильтром
+    const resultFind = await collection.find({name: "Tom"}).toArray();
+    console.log(resultFind); // -> Array()
+    console.log(`Количество документов с name: "Tom" ${resultFind.length}`); // -> Number()
+    return;
+}
+
+async function findWithNameAge(collection){
+    //Получение данных из коллекици с фильтром
+    const filter = {name: "Tom", age: 23};
+    const resultFind = await collection.find(filter).toArray();
+    console.log(resultFind); // -> Array()
+    console.log(`Количество документов с name: "Tom" ${resultFind.length}`); // -> Number()
+    return;
+}
+
+async function findOneWithName(collection){
+    const filter = {name: "Tom"};
+    const resultFind = await collection.findOne(filter);
+    console.log(resultFind); // -> { _id: new ObjectId("634d2e175198c8ab938681ba"), name: 'Tom', age: 23 }
+    console.log(resultFind.name); // -> "Tom"
+}
 
 run();
