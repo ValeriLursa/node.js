@@ -43,61 +43,16 @@ async function run() {
         //обращение к базе данных admin
         //Если базы данных с таким именем нет, то сервер создаст ее автоматически
         const db = mongoClient.db("admin");
-        //Проведение диагностики базы данных
-        //ping: 1 - проверка подключения к базе данных
-        const resultCommand = await db.command({ ping: 1 });
-        console.log("Подключение с базой данных успешно установлено");
-        console.log(resultCommand); // -> { ok: 1 }
-
+        //--command(db);
 
         //Если коллекции в базе данных нет, то сервер создаст ее автоматически
         const collection = db.collection("users");
 
-        //Добавление документа
-        let user = { name: "Tom", age: 23 };
-        let resultInsertOne = await collection.insertOne(user);
-        console.log("Добавление документа успешно");
-        console.log(resultInsertOne); // -> {
-                                        //     acknowledged: true,
-                                        //     insertedId: new ObjectId("634d2e175198c8ab938681ba")
-                                        //   }
-        //_id - уникальный идентификатор документа, который присваивается сервером при добавлении
-        console.log(user); // -> { name: 'Tom', age: 23, _id: new ObjectId("634d2e175198c8ab938681ba") }
+        //--insertOne(collection);
 
-        //Добавление нескольких документов
-        let users = [{name: "Bob", age: 34} , {name: "Alice", age: 21}, {name: "Tom", age: 45}];
-        resultInsertOne = await collection.insertMany(users);
-        console.log("Добавление нескольких документов успешно");
-        console.log(resultInsertOne); // ->{
-                                        //     acknowledged: true,
-                                        //     insertedCount: 3,
-                                        //     insertedIds: {
-                                        //       '0': new ObjectId("634d2fe90168eeefc15d7d9e"),
-                                        //       '1': new ObjectId("634d2fe90168eeefc15d7d9f"),
-                                        //       '2': new ObjectId("634d2fe90168eeefc15d7da0")
-                                        //     }
-                                        //   }
-        console.log(users);// ->[
-                            //     {
-                            //       name: 'Bob',
-                            //       age: 34,
-                            //       _id: new ObjectId("634d2fe90168eeefc15d7d9e")
-                            //     },
-                            //     {
-                            //       name: 'Alice',
-                            //       age: 21,
-                            //       _id: new ObjectId("634d2fe90168eeefc15d7d9f")
-                            //     },
-                            //     {
-                            //       name: 'Tom',
-                            //       age: 45,
-                            //       _id: new ObjectId("634d2fe90168eeefc15d7da0")
-                            //     }
-                            //   ]
+        //--insertMany(collection);
 
-        //Запрос количества документов в коллекции
-        const count = await collection.countDocuments();
-        console.log(`В коллекции users ${count} документов`);
+        countDocuments(collection);
     }
     catch (err) {
         console.log("Возникла ошибка");
@@ -109,5 +64,71 @@ async function run() {
         console.log("Подключение закрыто");
     }
 }
+
+async function insertOne(collection) {
+    //Добавление документа
+    let user = { name: "Tom", age: 23 };
+    let resultInsertOne = await collection.insertOne(user);
+    console.log("Добавление документа успешно");
+    console.log(resultInsertOne); // -> {
+    //     acknowledged: true,
+    //     insertedId: new ObjectId("634d2e175198c8ab938681ba")
+    //   }
+    //_id - уникальный идентификатор документа, который присваивается сервером при добавлении
+    console.log(user); // -> { name: 'Tom', age: 23, _id: new ObjectId("634d2e175198c8ab938681ba") }
+    return;
+}
+
+async function insertMany(collection) {
+    //Добавление нескольких документов
+    let users = [{ name: "Bob", age: 34 }, { name: "Alice", age: 21 }, { name: "Tom", age: 45 }];
+    resultInsertOne = await collection.insertMany(users);
+    console.log("Добавление нескольких документов успешно");
+    console.log(resultInsertOne); // ->{
+    //     acknowledged: true,
+    //     insertedCount: 3,
+    //     insertedIds: {
+    //       '0': new ObjectId("634d2fe90168eeefc15d7d9e"),
+    //       '1': new ObjectId("634d2fe90168eeefc15d7d9f"),
+    //       '2': new ObjectId("634d2fe90168eeefc15d7da0")
+    //     }
+    //   }
+    console.log(users);// ->[
+    //     {
+    //       name: 'Bob',
+    //       age: 34,
+    //       _id: new ObjectId("634d2fe90168eeefc15d7d9e")
+    //     },
+    //     {
+    //       name: 'Alice',
+    //       age: 21,
+    //       _id: new ObjectId("634d2fe90168eeefc15d7d9f")
+    //     },
+    //     {
+    //       name: 'Tom',
+    //       age: 45,
+    //       _id: new ObjectId("634d2fe90168eeefc15d7da0")
+    //     }
+    //   ]
+    return;
+}
+
+async function countDocuments(collection) {
+    //Запрос количества документов в коллекции
+    const count = await collection.countDocuments();
+    console.log(`В коллекции users ${count} документов`);
+    return;
+}
+
+async function command(db) {
+    //Проведение диагностики базы данных
+    //ping: 1 - проверка подключения к базе данных
+    const resultCommand = await db.command({ ping: 1 });
+    console.log("Подключение с базой данных успешно установлено");
+    console.log(resultCommand); // -> { ok: 1 }
+    return;
+}
+
+
 
 run();
