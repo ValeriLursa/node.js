@@ -10,10 +10,10 @@ var expectedArray = [
     { id: 3, author: 'Kōbō Abe', name: 'Kangaroo Notebook' }
 ];
 
-function rewriteFile(done){
+function rewriteFile(done) {
     //перезапись файла books.json
     let fileConstBooks = fs.readFileSync("const_books.json", "utf8");
-    fs.writeFileSync("books.json", fileConstBooks, (err)=>{
+    fs.writeFileSync("books.json", fileConstBooks, (err) => {
         if (err) console.log("Файл не перезаписан!");
     });
     return;
@@ -68,7 +68,11 @@ describe("api books Tests", () => {
             request(app)
                 .get("/api/books")
                 .expect((res) => {
-                    assert.deepEqual(res.body, expectedArray);
+                    let assertArray = [];
+                    res.body.forEach(elem => {
+                        assertArray.push({ "id": elem.id, "author": elem.author, "name": elem.name });
+                    });
+                    assert.deepEqual(assertArray, expectedArray);
                 })
                 .end(done);
         });
