@@ -5,9 +5,6 @@ const url = "mongodb://localhost:27017";
 //подключение к серверу бд
 const mongoClient = new MongoClient(url, { useUnifiedTopology: true });
 
-//синхронное подключение
-// //client - ссылка на подключенный к серверу клиент
-
 //не работает, сигнатура ниже устарела
 // mongoClient.connect((err, client) => {
 //     if (err) {
@@ -53,7 +50,7 @@ async function run() {
 
         //-- await insertOne(collection);
 
-        //--await insertMany(collection);
+        //-- await insertMany(collection);
 
         await countDocuments(collection);
 
@@ -64,8 +61,14 @@ async function run() {
         //-- await findWithNameAge(collection);
 
         //-- await findOneWithName(collection);
-        
-        await deleteDocument(collection, 'drop');
+
+        //-- await deleteDocument(collection, 'drop');
+
+        //-- await findOneAndUpdate(collection, { name: "Tom" }, { $set: { age: 21 } }, { returnDocument: "after" });
+
+        //-- await updateMany(collection, { name: "Bob" }, { $set: { name: "Tom" } });
+
+        //-- await updateOne(collection, {name: "Tom"}, {$set: {name: "Bob"}});
     }
     catch (err) {
         console.log("Возникла ошибка");
@@ -94,7 +97,7 @@ async function insertOne(collection) {
 
 async function insertMany(collection) {
     //Добавление нескольких документов
-    let users = [{ name: "Bob", age: 34 }, { name: "Alice", age: 21 }, { name: "Tom", age: 45 }];
+    let users = [{ name: "Bob", age: 34 }, { name: "Bob", age: 21 }, { name: "Bob", age: 45 }];
     resultInsertOne = await collection.insertMany(users);
     console.log("Добавление нескольких документов успешно");
     console.log(resultInsertOne); // ->{
@@ -200,7 +203,7 @@ async function deleteDocument(collection, nameFunction, filter) {
             //   }
             break;
         }
-        case 'drop':{
+        case 'drop': {
             //удаление всей коллекции
             //Если удаляемая коллекция - единственная в бд, то бд тоже удалится
             const resultDelete = await collection.drop();
@@ -208,6 +211,63 @@ async function deleteDocument(collection, nameFunction, filter) {
             break;
         }
     }
+    return;
+}
+
+async function findOneAndUpdate(collection, filter, update, returnDocument) {
+    /*изменение документа, 
+        filter - параметр для поиска документа, 
+    update - данные для изменения, 
+    returnDocument - возврат документа, до изменения или после*/
+    const resultBefore = await collection.findOneAndUpdate(filter, update);
+    console.log(resultBefore);//->{
+    // {
+    //     lastErrorObject: { n: 1, updatedExisting: true },
+    //     value: {
+    //       _id: new ObjectId("634fd6d90c8f1f843e58ca5f"),
+    //       name: 'Tom',
+    //       age: 21
+    //     },
+    //     ok: 1
+    //   }
+    const resultAfter = await collection.findOneAndUpdate(filter, update, returnDocument);
+    console.log(resultAfter);//->{
+    //     lastErrorObject: { n: 1, updatedExisting: true },
+    //     value: {
+    //       _id: new ObjectId("634fd6d90c8f1f843e58ca5f"),
+    //       name: 'Tom',
+    //       age: 30
+    //     },
+    //     ok: 1
+    //   }
+    return;
+}
+
+async function updateMany(collection, filter, update) {
+    //изменение нескольких документов
+    const result = await collection.updateMany(filter, update);
+    console.log(result);//->
+    // {
+    //     acknowledged: true,
+    //     modifiedCount: 3,
+    //     upsertedId: null,
+    //     upsertedCount: 0,
+    //     matchedCount: 3
+    //   }
+    return;
+}
+
+async function updateOne(collection, filter, update){
+    //изменение документа без возвращения его
+    const result = await collection.updateOne(filter, update);
+    console.log(result);//->
+    // {
+    //     acknowledged: true,
+    //     modifiedCount: 1,
+    //     upsertedId: null,
+    //     upsertedCount: 0,
+    //     matchedCount: 1
+    //   }
     return;
 }
 
