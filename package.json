@@ -10,7 +10,8 @@
     "scripts": {
         "start": "nodemon app.js",
         "dev": "node app.js Tom 26",
-        "test": "mocha app.test.js"
+        "test": "mocha app.test.js",
+        "mongo": "node mongodb/app.js"
     },
     "devDependencies": {
         "mocha": "^10.0.0",
