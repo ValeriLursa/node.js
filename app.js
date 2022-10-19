@@ -3,13 +3,55 @@ const express = require("express");
 const hbs = require("hbs");
 const expressHbs = require("express-handlebars");
 const app = express();
+
+//файлы
 const fs = require("fs");
 const jsonParser = express.json(); // для извелечения данных из запроса
 const filePath = "books.json";
 
+//база данных
+const MongoClient = require("mongodb").MongoClient;
+const objectId = require("mongodb").ObjectId;
+const mongoClient = new MongoClient("mongodb://localhost:27017/");
+let dbClient;
+
+//подключение к базе данных
+async function run() {
+    try {
+        await mongoClient.connect();
+        console.log("Подключение к серверу базы данных успешно");
+        app.locals.collection = mongoClient.db("books_db").collection("books");
+        const countDocumentDB = await app.locals.collection.countDocuments();
+        if (countDocumentDB == 0) {
+            console.log("Запуск добавления документов в базу данных")
+            await setBooksDB(app.locals.collection);
+        }
+        app.listen(3000, () => {
+            console.log("Сервер запущен...");
+        });
+    }
+    catch (err) {
+        console.log("Возникла ошибка");
+        console.log(err);
+    }
+}
+
+run();
+
+async function setBooksDB(collection) {
+    var expectedArray = [
+        { id: 1, author: 'Boris Vian', name: 'L’Écume des jours' },
+        { id: 2, author: 'Franz Kafka', name: 'Die Verwandlung' },
+        { id: 3, author: 'Kōbō Abe', name: 'Kangaroo Notebook' }
+    ];
+    const resultInsertMany = await collection.insertMany(expectedArray);
+    console.log("Добавление нескольких книг успешно");
+    return;
+}
+
 /*парсер для данных
 объект - результат парсинга будет представлять набор пар ключ-значение,
-а каждое значение может быть представлено в виде строки или массив*/
+а каждое значение может быть представлено в виде строки или массива*/
 const urlencodedParser = express.urlencoded({ extended: false });
 
 // устанавка настроек для файлов layout
@@ -20,14 +62,13 @@ app.engine("hbs", expressHbs.engine(
         extname: "hbs"
     }
 ))
+
 /*
 Установка Handelebars в качестве движка представления в Express
 */
 app.set("view engine", "hbs");
 //Настройка фукнционала частичных представлений
 hbs.registerPartials(__dirname + "/views/partials");
-
-var permiss = false;
 
 //start
 app.get("/", function (_, response) {
@@ -92,10 +133,18 @@ app.use("/room/bedroom/books", bookRouter);
 //api в стиле REST для взаимодействия с пользователем
 //работа с библиотекой
 //вывод всех книг
-app.get("/api/books", function (_, res) {
-    const content = fs.readFileSync(filePath, "utf8");
-    const books = JSON.parse(content);
-    res.send(books);
+app.get("/api/books", function (req, res) {
+    // запрос данных с файла json
+    // const content = fs.readFileSync(filePath, "utf8");
+    // const books = JSON.parse(content);
+    // res.send(books);
+
+    //запрос данных с базы данных
+    const collection = req.app.locals.collection;
+    collection.find().toArray((err, books) => {
+        if (err) console.log(err);
+        res.send(books);
+    });
 });
 
 //получение одной книги по ее id
@@ -233,7 +282,9 @@ app.get("/contact", (_, res) => {
 //обработка статусного кода 404
 app.get("*", (_, response) => response.status(404).send('Ресур не найден'));
 
-app.listen(3000, () => {
-    console.log("Сервер запущен...");
+process.on("SIGINT", () => {
+    dbClient.close();
+    process.exit();
 });
+
 module.exports.app = app;
