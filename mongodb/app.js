@@ -98,9 +98,9 @@ async function insertOne(collection) {
 async function insertMany(collection) {
     //Добавление нескольких документов
     let users = [{ name: "Bob", age: 34 }, { name: "Bob", age: 21 }, { name: "Bob", age: 45 }];
-    resultInsertOne = await collection.insertMany(users);
+    resultInsertMany = await collection.insertMany(users);
     console.log("Добавление нескольких документов успешно");
-    console.log(resultInsertOne); // ->{
+    console.log(resultInsertMany); // ->{
     //     acknowledged: true,
     //     insertedCount: 3,
     //     insertedIds: {
@@ -271,4 +271,6 @@ async function updateOne(collection, filter, update){
     return;
 }
 
-run();
+// run();
+
+console.log("Локальный модуль mongo подключен")
