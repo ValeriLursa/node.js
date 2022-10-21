@@ -1,6 +1,8 @@
 //Ключевой класс для работы с MongoDB
 const { MongoClient } = require("mongodb");
 const url = "mongodb://localhost:27017";
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 //подключение к серверу бд
 const mongoClient = new MongoClient(url, { useUnifiedTopology: true });
@@ -257,7 +259,7 @@ async function updateMany(collection, filter, update) {
     return;
 }
 
-async function updateOne(collection, filter, update){
+async function updateOne(collection, filter, update) {
     //изменение документа без возвращения его
     const result = await collection.updateOne(filter, update);
     console.log(result);//->
@@ -270,6 +272,106 @@ async function updateOne(collection, filter, update){
     //   }
     return;
 }
+
+//mongoose
+//Установка схемы
+const userScheme = new Schema({
+    name: {
+        type: String,
+        default: "NoName", //значение по умолчанию
+        //валидация
+        required: true,
+        maxlength: 20
+    },
+    age: {
+        type: Number,
+        default: 1,
+        required: true,
+        min: 1,
+        max: 150
+    }
+},
+    //отключение поля версии документа
+    { versionKey: false }
+);
+
+// подключение к базе данных
+mongoose.connect("mongodb://localhost:27017/usersdb", { useUnifiedTopology: true, useNewUrlParser: true });
+
+//Создание модели, "User" - название модели, в бд эта коллекция хранится во множественном числе
+const User = mongoose.model("User", userScheme);
+const user = new User({
+    //метаданные объектов
+    name: "Bill",
+    age: 41
+});
+
+const user1 = new User({ name: "Lui" });// если age = 0 -> Error: User validation failed: age: Path `age` (0) is less than minimum allowed value (1).
+
+//сохранение текущего объекта в базу данных
+// user1.save((err) => {
+//     mongoose.disconnect();
+
+//     if (err) return console.log(err);
+//     console.log("Объект сохранен", user1);//-> 
+//     // Объект сохранен {
+//     //     name: 'Bill',
+//     //     age: 41,
+//     //     _id: new ObjectId("635280d6d6fb3ceeef2a48d7"),
+//     //     __v: 0
+//     //   }
+// })
+const filter = {name: "Lui"};
+
+User.find(filter, (err, docs)=>{
+    mongoose.disconnect();
+
+    if (err) return console.log(err);
+    console.log(docs);//->
+    // [
+    //     {
+    //       _id: new ObjectId("635280d6d6fb3ceeef2a48d7"),
+    //       name: 'Bill',
+    //       age: 41,
+    //       __v: 0
+    //     },
+    //     {
+    //       _id: new ObjectId("63528263bb590eb30ea5cd17"),
+    //       name: 'Bill',
+    //       age: 41,
+    //       __v: 0
+    //     },
+    //     {
+    //       _id: new ObjectId("635282b31c037cfb5e560d7f"),
+    //       name: 'Lui',
+    //       age: 1,
+    //       __v: 0
+    //     }
+    //   ]
+})
+/*аналогиченые методы
+findOne() - возвращает один объект
+findById() - возвращает документ с определенным идентификатором
+deleteOne() - удаление одного объекта 
+deleteMany() - удаление всех объектов
+findOneAndDelete() - поиск одного объекта и удаление его
+finByIdAndDelete() - поиск одного объекта по полю _id и удаление его
+updateOne() - изменение первого документа 
+updateMany() - изменение всех документов
+findByIdAndUpdate(id, filter, {new: true}) - поиск одного объекта по _id и изменнеие его
+*/
+
+//сохранение через promise
+// user.save()
+// //получение данных, которые возвратил сервер базы данных
+// .then((doc)=>{
+//     console.log("Сохранен объект", doc);
+//     mongoose.disconnect();
+// })
+// .catch((err)=>{
+//     console.log(err);
+//     mongoose.disconnect();
+// })
 
 // run();
 
