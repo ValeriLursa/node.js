@@ -14,6 +14,12 @@ const MongoClient = require("mongodb").MongoClient;
 const objectId = require("mongodb").ObjectId;
 const mongoClient = new MongoClient("mongodb://localhost:27017/");
 let dbClient;
+
+//база данных через mongoose
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+
+//статус сервера базы данных
 let statusDB = false;
 
 //подключение к базе данных
@@ -39,7 +45,7 @@ async function run(statusDB) {
     });
 }
 
-run(statusDB);
+// run(statusDB);
 
 async function setBooksDB(collection) {
     var expectedArray = [
@@ -51,6 +57,15 @@ async function setBooksDB(collection) {
     console.log("Добавление нескольких книг успешно");
     return;
 }
+
+//подключение к базе данных через mongoose
+mongoose.connect("mongodb://localhost:27017/usersdb", { useUnifiedTopology: true, useNewUrlParser: true }, function (err) {
+    if (err) return console.log(err);
+    app.listen(3000, function () {
+        console.log("Сервер ожидает подключения...");
+    });
+    console.log("Подключение к бд есть");
+});
 
 /*парсер для данных
 объект - результат парсинга будет представлять набор пар ключ-значение,
@@ -79,23 +94,70 @@ app.get("/", function (_, response) {
     response.sendFile(__dirname + "/age.html");
 });
 
-app.post("/", urlencodedParser, function (request, response) {
-    if (!request.body) return response.sendStatus(400);
-    //Не работает вывод результата на html через response.send через переменные
-    //https://metanit.com/web/nodejs/4.5.php
-    if (request.body.userAge > 17) {
-        permiss = true;
-        response.redirect("index");
-    }
-    else {
-        //вывод в консоль на стороне сервера в формате json
-        console.log(JSON.stringify(request.body));
-        //результат вывода {"userName":"Игорь","userAge":"1"}
-        //возвращение страницы с результатом
-        response.send('Результат: ' + request.body.userName + ' ' + request.body.userAge);
-        //результат вывода Результат: Игорь 1
-    }
-});
+// app.post("/", urlencodedParser, function (request, response) {
+//     if (!request.body) return response.sendStatus(400);
+//     //Не работает вывод результата на html через response.send через переменные
+//     //https://metanit.com/web/nodejs/4.5.php
+//     if (request.body.userAge > 17) {
+//         permiss = true;
+//         response.redirect("index");
+//     }
+//     else {
+//         //вывод в консоль на стороне сервера в формате json
+//         console.log(JSON.stringify(request.body));
+//         //результат вывода {"userName":"Игорь","userAge":"1"}
+//         //возвращение страницы с результатом
+//         response.send('Результат: ' + request.body.userName + ' ' + request.body.userAge);
+//         //результат вывода Результат: Игорь 1
+//     }
+// });
+
+//проверка возраста через mongooste
+const userScheme = new Schema({ name: String, age: Number }, { versionKey: false });
+const User = mongoose.model("User", userScheme);
+
+function creatUser() {
+    User.create({ name: "Alice", age: 34 }, (err, doc) => {
+        disconnectMongoos();
+        if (err) return console.log(err);
+        console.log("Сохранен объект user", doc);
+    });
+}
+
+function disconnectMongoos() {
+    mongoose.disconnect();
+}
+
+// creatUser();
+app.post("/", jsonParser, (req, res) => {
+    if (!req.body) return res.sendStatus(400);
+    const userName = req.body.name;
+    console.log(req.body);
+    const userAge = req.body.age;
+
+    const filter = { name: userName };
+    // mongoose.connect("mongodb://localhost:27017/usersdb", { useUnifiedTopology: true, useNewUrlParser: true }, function (err) {
+    //     if (err) return console.log(err);
+    // });
+    User.findOne(filter, (err, doc) => {
+        if (err) { 
+            console.log(err);
+        }
+        console.log(doc);
+        if (doc == null){
+            res.send("Такого пользователя нет");
+            return;
+        }
+        if (userAge != doc.age) {
+            console.log("Несовпадение возраста");
+            res.send(false);
+            return;
+        }
+        console.log("Совпадение успешно");
+        res.send(doc);
+    });
+})
+
 
 //file-css
 app.get(["/navbar.css", "/room/navbar.css"], (_, response) => response.sendFile(__dirname + "/css/navbar.css"))
@@ -290,6 +352,7 @@ app.get("*", (_, response) => response.status(404).send('Ресур не най�
 
 process.on("SIGINT", () => {
     dbClient.close();
+    mongoose.disconnect();
     process.exit();
 });
 
