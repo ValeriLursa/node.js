@@ -321,9 +321,9 @@ const user1 = new User({ name: "Lui" });// если age = 0 -> Error: User valid
 //     //     __v: 0
 //     //   }
 // })
-const filter = {name: "Lui"};
+const filter = {name: "Q"};
 
-User.find(filter, (err, docs)=>{
+User.findOne(filter, (err, docs)=>{
     mongoose.disconnect();
 
     if (err) return console.log(err);
