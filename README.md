@@ -1,7 +1,7 @@
 <h1>Node.js</h1>
 <h2>Pet-проект на основе курса https://metanit.com/web/nodejs/</h2>
 Имитация квартиры в виде сайта<br>
-<a href="https://www.figma.com/proto/N88bYyWe5NhWS5Sx8kyxMh/Home?node-id=3%3A70&scaling=min-zoom&page-id=0%3A1&starting-point-node-id=1%3A2">Ссылка на макет в Figma</a><br>
+<a href="https://www.figma.com/proto/N88bYyWe5NhWS5Sx8kyxMh/Home?node-id=1%3A2&scaling=min-zoom&page-id=0%3A1&starting-point-node-id=1%3A2">Ссылка на макет в Figma</a><br>
 Используемые технологии: 
 <ul>
 <li>html,</li>
