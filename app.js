@@ -14,29 +14,32 @@ const MongoClient = require("mongodb").MongoClient;
 const objectId = require("mongodb").ObjectId;
 const mongoClient = new MongoClient("mongodb://localhost:27017/");
 let dbClient;
+let statusDB = false;
 
 //подключение к базе данных
-async function run() {
-    try {
-        await mongoClient.connect();
-        console.log("Подключение к серверу базы данных успешно");
-        app.locals.collection = mongoClient.db("books_db").collection("books");
-        const countDocumentDB = await app.locals.collection.countDocuments();
-        if (countDocumentDB == 0) {
-            console.log("Запуск добавления документов в базу данных")
-            await setBooksDB(app.locals.collection);
+async function run(statusDB) {
+    if (statusDB) {
+        try {
+            await mongoClient.connect();
+            console.log("Подключение к серверу базы данных успешно");
+            app.locals.collection = mongoClient.db("books_db").collection("books");
+            const countDocumentDB = await app.locals.collection.countDocuments();
+            if (countDocumentDB == 0) {
+                console.log("Запуск добавления документов в базу данных")
+                await setBooksDB(app.locals.collection);
+            }
         }
-        app.listen(3000, () => {
-            console.log("Сервер запущен...");
-        });
+        catch (err) {
+            console.log("Возникла ошибка");
+            console.log(err);
+        }
     }
-    catch (err) {
-        console.log("Возникла ошибка");
-        console.log(err);
-    }
+    app.listen(3000, () => {
+        console.log("Сервер запущен...");
+    });
 }
 
-run();
+run(statusDB);
 
 async function setBooksDB(collection) {
     var expectedArray = [
@@ -134,17 +137,20 @@ app.use("/room/bedroom/books", bookRouter);
 //работа с библиотекой
 //вывод всех книг
 app.get("/api/books", function (req, res) {
-    // запрос данных с файла json
-    // const content = fs.readFileSync(filePath, "utf8");
-    // const books = JSON.parse(content);
-    // res.send(books);
-
-    //запрос данных с базы данных
-    const collection = req.app.locals.collection;
-    collection.find().toArray((err, books) => {
-        if (err) console.log(err);
+    if (!statusDB) {
+        // запрос данных с файла json
+        const content = fs.readFileSync(filePath, "utf8");
+        const books = JSON.parse(content);
         res.send(books);
-    });
+    }
+    else {
+        //запрос данных с базы данных
+        const collection = req.app.locals.collection;
+        collection.find().toArray((err, books) => {
+            if (err) console.log(err);
+            res.send(books);
+        });
+    }
 });
 
 //получение одной книги по ее id
